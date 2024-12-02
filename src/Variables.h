@@ -7,14 +7,15 @@
 #include <any>
 #include <vector>
 
-class variable {
+class Variable {
 private:
     static std::vector<std::map<std::string, std::any>> vars; // globs in vars[0], locals in vars[>=1]
 public:
-    std::any getValue(const std::string &);
-    void setValue(const std::string &, const std::any &);
-    void addScope();
-    void deleteScope();
+    static void tryGetValue(std::any &);
+    static std::any getValue(const std::string &);
+    static void setValue(const std::string &, const std::any &);
+    static void addScope();
+    static void deleteScope();
 };
 
 #endif

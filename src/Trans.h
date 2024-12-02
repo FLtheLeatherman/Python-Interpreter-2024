@@ -3,6 +3,7 @@
 #define PYTHON_INTERPRETER_TRANS_H
 
 #include "int2048.h"
+#include "Variables.h"
 #include <any>
 #include <string>
 

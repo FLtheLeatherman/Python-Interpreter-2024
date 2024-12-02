@@ -7,6 +7,7 @@ std::any EvalVisitor::visitStmt(Python3Parser::StmtContext *ctx) {
     } else {
         return visit(ctx->compound_stmt());
     }
+    std::cout << "GOOD" << std::endl;
 }
 
 std::any EvalVisitor::visitSimple_stmt(Python3Parser::Simple_stmtContext *ctx) {
@@ -24,15 +25,80 @@ std::any EvalVisitor::visitSmall_stmt(Python3Parser::Small_stmtContext *ctx) {
 }
 
 std::any EvalVisitor::visitExpr_stmt(Python3Parser::Expr_stmtContext *ctx) {
-    // std::cerr << "Expr_stmt!" << std::endl;
     std::vector<Python3Parser::TestlistContext*> testlist_list = ctx->testlist();
+    // std::cerr << testlist_list.size() << std::endl;
     if (testlist_list.size() == 1) {
         visit(testlist_list[0]);
-        return kDefault;
+    } else {
+        // std::cout << "Expr_stmt!" << std::endl;
+        if (ctx->augassign() == nullptr) {
+            std::vector<std::any> LHS_list;
+            std::vector<std::any> RHS_list = std::any_cast<std::vector<std::any>>(visit(testlist_list[testlist_list.size() - 1]));
+            for (int i = testlist_list.size() - 2; i >= 0; --i) {
+                // std::cout << i << std::endl;
+                // std::cerr << "GOOD" << std::endl;
+                LHS_list = std::any_cast<std::vector<std::any>>(visit(testlist_list[i]));
+                // std::cerr << "GOOD" << std::endl;
+                // std::cout << RHS_list.size() << std::endl;
+                for (size_t j = 0; j < RHS_list.size(); ++j) {
+                    // std::cout << j << ':' << std::any_cast<std::pair<std::string, int>>(LHS_list[j]).first << std::endl;
+                    // std::cout << j << "start" << std::endl;
+                    std::any val = RHS_list[j];
+                    Variable::tryGetValue(val);
+                    Variable::setValue(std::any_cast<std::pair<std::string, int>>(LHS_list[j]).first, val);
+                    // std::cout << j << "end" << std::endl;
+                }
+                RHS_list.swap(LHS_list);
+            }
+        } else {
+            std::vector<std::any> tmp = std::any_cast<std::vector<std::any>>(visit(testlist_list[0]));
+            std::string LHS = std::any_cast<std::pair<std::string, int>>(tmp[0]).first;
+            std::any val = Variable::getValue(LHS);
+            // std::cerr << "GOOD" << std::endl;
+            std::any RHS = std::any_cast<std::vector<std::any>>(visit(testlist_list[1]))[0];
+            operatorType opt = std::any_cast<operatorType>(visit(ctx->augassign()));
+            // std::cerr << "GOOD" << std::endl;
+            // std::cerr << opt << std::endl;
+            if (opt == kAddAssign) {
+                if (val.type() == typeid(std::string) || RHS.type() == typeid(std::string)) {
+                    val = anyToString(val) + anyToString(RHS);
+                } else if (val.type() == typeid(double) || RHS.type() == typeid(double)) {
+                    val = anyToDouble(val) + anyToDouble(RHS);
+                } else {
+                    // std::cerr << "Right!" << std::endl;
+                    // std::cerr << (val.type() == typeid(int2048)) << std::endl;
+                    val = anyToInt(val) + anyToInt(RHS);
+                    // std::cerr << sb << std::endl;
+                    // std::cerr << "Right!" << std::endl;
+                }
+            } else if (opt == kSubAssign) {
+                if (val.type() == typeid(double) || RHS.type() == typeid(double)) {
+                    val = anyToDouble(val) - anyToDouble(RHS);
+                } else {
+                    val = anyToInt(val) - anyToInt(RHS);
+                }
+            } else if (opt == kMulAssign) {
+                if (val.type() == typeid(std::string)) {
+                    val = std::any_cast<std::string>(val) * anyToInt(RHS);
+                } else if (RHS.type() == typeid(std::string)) {
+                    val = std::any_cast<std::string>(RHS) * anyToInt(LHS);
+                } else if (val.type() == typeid(double) || RHS.type() == typeid(double)) {
+                    val = anyToDouble(val) * anyToDouble(RHS);
+                } else {
+                    val = anyToInt(val) * anyToInt(RHS);
+                }
+            } else if (opt == kDivAssign) {
+                val = anyToDouble(val) / anyToDouble(RHS);
+            } else if (opt == kIDivAssign) {
+                val = anyToInt(val) / anyToInt(RHS);
+            } else {
+                val = anyToInt(val) % anyToInt(RHS);
+            }
+            Variable::setValue(LHS, val);
+        }
     }
-    if (ctx->augassign() == nullptr) {
-        
-    }
+    // std::cout << "GOOD" << std::endl;
+    return kDefault;
 }
 
 std::any EvalVisitor::visitFlow_stmt(Python3Parser::Flow_stmtContext *ctx) {
@@ -110,6 +176,9 @@ std::any EvalVisitor::visitSuite(Python3Parser::SuiteContext *ctx) {
         stmt_list = ctx->stmt();
         for (auto x: stmt_list) {
             std::any val = visitStmt(x);
+            if (val.type() != typeid(endValue)) {
+                return val;
+            }
             // std::cerr << (val.type() == typeid(endValue)) << std::endl;
             // std::cerr << "End" << std::endl;
             endValue tmp = std::any_cast<endValue>(val);

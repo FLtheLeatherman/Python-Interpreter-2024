@@ -7,9 +7,11 @@ std::any EvalVisitor::visitComparison(Python3Parser::ComparisonContext *ctx) {
     if (arith_list.size() == 1) {
         return res;
     }
+    Variable::tryGetValue(res);
     for (size_t i = 1; i < arith_list.size(); ++i) {
         CompType opt = std::any_cast<CompType>(visit(op_list[i - 1]));
         std::any val = visit(arith_list[i]);
+        Variable::tryGetValue(val);
         if (opt == kL) {
             if (res.type() == typeid(std::string)) {
                 if (std::any_cast<std::string>(res) >= std::any_cast<std::string>(val)) {
@@ -123,9 +125,11 @@ std::any EvalVisitor::visitArith_expr(Python3Parser::Arith_exprContext *ctx) {
     if (term_list.size() == 1) {
         return res;
     }
+    Variable::tryGetValue(res);
     for (size_t i = 1; i < term_list.size(); ++i) {
         operatorType opt = std::any_cast<operatorType>(visit(op_list[i - 1]));
         std::any val = visit(term_list[i]);
+        Variable::tryGetValue(val);
         if (opt == kAdd) {
             if (res.type() == typeid(std::string)) {
                 std::string tmp = std::any_cast<std::string>(res) + std::any_cast<std::string>(val);
@@ -175,9 +179,11 @@ std::any EvalVisitor::visitTerm(Python3Parser::TermContext *ctx) {
     if (factor_list.size() == 1) {
         return res;
     }
+    Variable::tryGetValue(res);
     for (size_t i = 1; i < factor_list.size(); ++i) {
         operatorType opt = std::any_cast<operatorType>(visit(op_list[i - 1]));
         std::any val = visit(factor_list[i]);
+        Variable::tryGetValue(val);
         if (opt == kMul) {
             if (res.type() == typeid(std::string)) {
                 res = std::any_cast<std::string>(res) * std::any_cast<int2048>(val);
@@ -224,6 +230,7 @@ std::any EvalVisitor::visitFactor(Python3Parser::FactorContext *ctx) {
     } else {
         std::any tmp = visit(ctx->atom_expr());
         // std::cerr << (tmp.type() == typeid(endValue)) << std::endl;
+        // std::cerr << "??" << (tmp.type() == typeid(std::pair<std::string, int>)) << std::endl;
         return tmp;
     }
 }
@@ -285,6 +292,7 @@ std::any EvalVisitor::visitAtom_expr(Python3Parser::Atom_exprContext *ctx) {
             return 0;
         }
     } else {
+        // std::cerr << "omg" << std::endl;
         return visit(ctx->atom());
     }
 }

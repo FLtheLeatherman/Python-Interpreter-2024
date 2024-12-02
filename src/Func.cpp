@@ -22,6 +22,7 @@ std::any EvalVisitor::visitArglist(Python3Parser::ArglistContext *ctx) {
     std::vector<std::any> res;
     for (auto &arg: arg_list) {
         std::any val = visit(arg);
+        Variable::tryGetValue(val);
         if (val.type() == typeid(std::vector<std::any>)) {
             std::vector<std::any> tmp = std::any_cast<std::vector<std::any>>(val);
             for (auto x: tmp) {

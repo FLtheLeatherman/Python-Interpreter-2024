@@ -13,8 +13,7 @@ tfpdef: NAME ; // done
 stmt: simple_stmt | compound_stmt; // done
 simple_stmt: small_stmt  NEWLINE; // done
 small_stmt: expr_stmt | flow_stmt; // done
-expr_stmt: testlist ( (augassign testlist) |
-                     ('=' testlist)*);//连等 加等/减等/...
+expr_stmt: testlist ( (augassign testlist) | ('=' testlist)*);//连等 加等/减等/... // done
 augassign: ('+=' | '-=' | '*=' | '/=' | '//=' | '%=' ); // done
 flow_stmt: break_stmt | continue_stmt | return_stmt; // done
 break_stmt: 'break'; // done

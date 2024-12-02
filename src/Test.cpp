@@ -45,8 +45,18 @@ std::any EvalVisitor::visitNot_test(Python3Parser::Not_testContext *ctx) {
 std::any EvalVisitor::visitTestlist(Python3Parser::TestlistContext *ctx) {
     std::vector<Python3Parser::TestContext*> test_list = ctx->test();
     std::vector<std::any> res;
+    // std::cerr << "GOOD!" << std::endl;
     for (auto &node: test_list) {
-        res.push_back(visit(node));
+        std::any val = visit(node);
+        if (val.type() == typeid(std::vector<std::any>)) {
+            std::vector<std::any> tmp = std::any_cast<std::vector<std::any>>(val);
+            for (size_t i = 0; i < tmp.size(); ++i) {
+                res.push_back(tmp[i]);
+            }
+        } else {
+            // std::cerr << '?' << (val.type() == typeid(std::pair<std::string, int>)) << std::endl;
+            res.push_back(val);
+        }
     }
     // std::cerr << "Testlist!" << std::endl;
     return res;

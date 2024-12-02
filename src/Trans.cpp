@@ -1,6 +1,7 @@
 #include "Trans.h"
 
 bool anyToBoolean(std::any val) {
+    Variable::tryGetValue(val);
     if (val.type() == typeid(std::string)) {
         std::string tmp = std::any_cast<std::string>(val);
         return tmp != "";
@@ -16,6 +17,7 @@ bool anyToBoolean(std::any val) {
 }
 
 std::string anyToString(std::any val) {
+    Variable::tryGetValue(val);
     if (val.type() == typeid(std::string)) {
         return std::any_cast<std::string>(val);
     } else if (val.type() == typeid(bool)) {
@@ -31,6 +33,7 @@ std::string anyToString(std::any val) {
 }
 
 int2048 anyToInt(std::any val) {
+    Variable::tryGetValue(val);
     if (val.type() == typeid(std::string)) {
         return int2048(std::any_cast<std::string>(val));
     } else if (val.type() == typeid(bool)) {
@@ -43,6 +46,7 @@ int2048 anyToInt(std::any val) {
 }
 
 double anyToDouble(std::any val) {
+    Variable::tryGetValue(val);
     if (val.type() == typeid(std::string)) {
         return std::stod(std::any_cast<std::string>(val));
     } else if (val.type() == typeid(bool)) {
