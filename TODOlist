@@ -1,0 +1,5 @@
+类型转换 anyToBool 等
+
+变量维护 用 vector 实现各作用域的变量
+
+可以先完成 visitSuite: 把函数遍历一遍即可； 和 visitIf: 利用 anyToBool 检查每个判断条件，然后跑 suit, 注意 else
