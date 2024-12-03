@@ -35,9 +35,11 @@ std::string anyToString(std::any val) {
         std::string tmp = "";
         double val1 = std::any_cast<double>(val);
         return std::to_string(val1);
-    } else {
+    } else if (val.type() == typeid(int2048)) {
         int2048 tmp = std::any_cast<int2048>(val);
         return tmp.getString();
+    } else {
+        return "None";
     }
 }
 
