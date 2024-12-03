@@ -32,7 +32,6 @@ std::string anyToString(std::any val) {
     } else if (val.type() == typeid(bool)) {
         return std::any_cast<bool>(val)? "True" : "False";
     } else if (val.type() == typeid(double)) {
-        std::string tmp = "";
         double val1 = std::any_cast<double>(val);
         return std::to_string(val1);
     } else if (val.type() == typeid(int2048)) {

@@ -262,8 +262,8 @@ std::any EvalVisitor::visitAtom_expr(Python3Parser::Atom_exprContext *ctx) {
                                 std::cout << '\n';
                             } else if (tmp[j + 1] == 't'){
                                 std::cout << '\t';
-                            } else if (tmp[j + 1] == '\\') {
-                                std::cout << '\\';
+                            } else {
+                                std::cout << tmp[j + 1];
                             }
                             j += 1;
                         } else {
