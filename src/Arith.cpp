@@ -282,11 +282,9 @@ std::any EvalVisitor::visitAtom_expr(Python3Parser::Atom_exprContext *ctx) {
                 }
                 if (i < arg_list.size() - 1) {
                     std::cout << ' ';
-                } else {
-                    // std::cout << std::endl;
-                    std::cout << '\n';
                 }
             }
+            std::cout << '\n';
             // std::cerr << "Default!" << std::endl;
             return kDefault;
         } else if (str == "int") {
