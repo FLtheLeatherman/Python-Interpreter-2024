@@ -22,7 +22,7 @@ bool anyToBoolean(std::any val) {
         int2048 tmp = std::any_cast<int2048>(val);
         return tmp.getBoolean();
     }
-    return true;
+    return false;
 }
 
 std::string anyToString(std::any val) {
