@@ -48,7 +48,10 @@ std::any EvalVisitor::visitComparison(Python3Parser::ComparisonContext *ctx) {
                 return false;
             } else if ((res.type() == typeid(valueType)) && (val.type() == typeid(valueType))) {
                 // do nothing.
-            } else if (res.type() == typeid(std::string)) {
+            } else if (res.type() == typeid(std::string) || val.type() == typeid(std::string)) {
+                if (res.type() != typeid(std::string) || val.type() != typeid(std::string)) {
+                    return false;
+                }
                 if (std::any_cast<std::string>(res) != std::any_cast<std::string>(val)) {
                     return false;
                 }
@@ -94,8 +97,10 @@ std::any EvalVisitor::visitComparison(Python3Parser::ComparisonContext *ctx) {
                 return false;
             } else if (res.type() == typeid(valueType) || val.type() == typeid(valueType)) {
                 // do nothing.
-            } else if (res.type() == typeid(std::string)) {
-                if (std::any_cast<std::string>(res) == std::any_cast<std::string>(val)) {
+            } else if (res.type() == typeid(std::string) || val.type() == typeid(std::string)) {
+                if (res.type() != typeid(std::string) || val.type() != typeid(std::string)) {
+                    // do nothing.
+                } else if (std::any_cast<std::string>(res) == std::any_cast<std::string>(val)) {
                     return false;
                 }
             } else if (res.type() == typeid(double) || val.type() == typeid(double)) {
