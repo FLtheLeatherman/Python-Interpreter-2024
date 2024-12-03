@@ -225,6 +225,7 @@ std::any EvalVisitor::visitFactor(Python3Parser::FactorContext *ctx) {
         return visit(ctx->factor());
     } else if (ctx->MINUS() != nullptr) {
         std::any val = visit(ctx->factor());
+        Variable::tryGetValue(val);
         if (val.type() == typeid(double)) {
             return -std::any_cast<double>(val);
         } else {
