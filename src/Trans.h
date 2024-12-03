@@ -7,6 +7,8 @@
 #include <any>
 #include <string>
 
+std::string operator *(std::string str, int2048 num);
+
 bool anyToBoolean(std::any);
 
 std::string anyToString(std::any);

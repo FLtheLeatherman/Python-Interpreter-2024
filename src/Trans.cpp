@@ -1,5 +1,14 @@
 #include "Trans.h"
 
+std::string operator *(std::string str, int2048 num) {
+    std::string res = "";
+    while (num > 0ll) {
+        res += str;
+        num -= 1;
+    }
+    return res;
+}
+
 bool anyToBoolean(std::any val) {
     Variable::tryGetValue(val);
     if (val.type() == typeid(std::string)) {

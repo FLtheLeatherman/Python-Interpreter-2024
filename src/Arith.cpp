@@ -165,15 +165,6 @@ std::any EvalVisitor::visitAddorsub_op(Python3Parser::Addorsub_opContext *ctx) {
     }
 }
 
-std::string operator *(std::string str, int2048 num) {
-    std::string res = "";
-    while (num > 0ll) {
-        res += str;
-        num -= 1;
-    }
-    return res;
-}
-
 std::any EvalVisitor::visitTerm(Python3Parser::TermContext *ctx) {
     std::vector<Python3Parser::FactorContext*> factor_list = ctx->factor();
     std::vector<Python3Parser::Muldivmod_opContext*> op_list = ctx->muldivmod_op();
@@ -276,8 +267,8 @@ std::any EvalVisitor::visitAtom_expr(Python3Parser::Atom_exprContext *ctx) {
                 if (i < arg_list.size() - 1) {
                     std::cout << ' ';
                 } else {
-                    std::cout << std::endl;
-                    // std::cout << '\n';
+                    // std::cout << std::endl;
+                    std::cout << '\n';
                 }
             }
             // std::cerr << "Default!" << std::endl;
