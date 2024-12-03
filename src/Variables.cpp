@@ -35,6 +35,10 @@ void Variable::setValue(const std::string &str, const std::any &val) {
     }
 }
 
+void Variable::setValueLocal(const std::string &str, const std::any &val) {
+    vars.back()[str] = val;
+}
+
 void Variable::addScope() {
     vars.emplace_back();
 }

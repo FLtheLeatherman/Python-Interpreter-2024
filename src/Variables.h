@@ -14,6 +14,7 @@ public:
     static void tryGetValue(std::any &);
     static std::any getValue(const std::string &);
     static void setValue(const std::string &, const std::any &);
+    static void setValueLocal(const std::string &, const std::any &);
     static void addScope();
     static void deleteScope();
 };

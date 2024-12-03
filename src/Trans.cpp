@@ -9,7 +9,7 @@ bool anyToBoolean(std::any val) {
         return std::any_cast<bool>(val);
     } else if (val.type() == typeid(double)) {
         return std::any_cast<double>(val);
-    } else {
+    } else if (val.type() == typeid(int2048)){
         int2048 tmp = std::any_cast<int2048>(val);
         return tmp.getBoolean();
     }

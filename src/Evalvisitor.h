@@ -8,6 +8,7 @@
 #include "Variables.h"
 #include "Trans.h"
 #include "int2048.h"
+#include "Functions.h"
 
 enum endValue {
     kDefault, kBreak, kContinue, kReturnVoid

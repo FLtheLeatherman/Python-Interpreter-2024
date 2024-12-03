@@ -8,6 +8,7 @@ std::any EvalVisitor::visitComparison(Python3Parser::ComparisonContext *ctx) {
         return res;
     }
     Variable::tryGetValue(res);
+    // std::cout << "Comp1" << std::endl;
     for (size_t i = 1; i < arith_list.size(); ++i) {
         CompType opt = std::any_cast<CompType>(visit(op_list[i - 1]));
         std::any val = visit(arith_list[i]);
@@ -99,6 +100,7 @@ std::any EvalVisitor::visitComparison(Python3Parser::ComparisonContext *ctx) {
         }
         res = val;
     }
+    // std::cout << "Comp2" << std::endl;
     return true;
 }
 
@@ -274,7 +276,8 @@ std::any EvalVisitor::visitAtom_expr(Python3Parser::Atom_exprContext *ctx) {
                 if (i < arg_list.size() - 1) {
                     std::cout << ' ';
                 } else {
-                    std::cout << '\n';
+                    std::cout << std::endl;
+                    // std::cout << '\n';
                 }
             }
             // std::cerr << "Default!" << std::endl;
@@ -288,8 +291,13 @@ std::any EvalVisitor::visitAtom_expr(Python3Parser::Atom_exprContext *ctx) {
         } else if (str == "bool"){
             return anyToBoolean(arg_list[0]);
         } else {
-            // visit functions. todo;
-            return 0;
+            Variable::addScope();
+            // std::cerr << str << std::endl;
+            std::any res = visit(Functions::visitFunction(str, arg_list));
+            // std::cerr << str << std::endl;
+            Variable::deleteScope();
+            // std::cerr << (res.type() == typeid(std::vector<std::any>)) << std::endl;
+            return res;
         }
     } else {
         // std::cerr << "omg" << std::endl;

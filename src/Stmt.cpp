@@ -7,7 +7,7 @@ std::any EvalVisitor::visitStmt(Python3Parser::StmtContext *ctx) {
     } else {
         return visit(ctx->compound_stmt());
     }
-    std::cout << "GOOD" << std::endl;
+    // std::cout << "GOOD" << std::endl;
 }
 
 std::any EvalVisitor::visitSimple_stmt(Python3Parser::Simple_stmtContext *ctx) {
@@ -30,10 +30,10 @@ std::any EvalVisitor::visitExpr_stmt(Python3Parser::Expr_stmtContext *ctx) {
     if (testlist_list.size() == 1) {
         visit(testlist_list[0]);
     } else {
-        // std::cout << "Expr_stmt!" << std::endl;
         if (ctx->augassign() == nullptr) {
             std::vector<std::any> LHS_list;
             std::vector<std::any> RHS_list = std::any_cast<std::vector<std::any>>(visit(testlist_list[testlist_list.size() - 1]));
+            // std::cout << "Expr_stmt! begin" << std::endl;
             for (int i = testlist_list.size() - 2; i >= 0; --i) {
                 // std::cout << i << std::endl;
                 // std::cerr << "GOOD" << std::endl;
@@ -50,6 +50,7 @@ std::any EvalVisitor::visitExpr_stmt(Python3Parser::Expr_stmtContext *ctx) {
                 }
                 RHS_list.swap(LHS_list);
             }
+            // std::cout << "Expr_stmt! end" << std::endl;
         } else {
             std::vector<std::any> tmp = std::any_cast<std::vector<std::any>>(visit(testlist_list[0]));
             std::string LHS = std::any_cast<std::pair<std::string, int>>(tmp[0]).first;
@@ -81,7 +82,7 @@ std::any EvalVisitor::visitExpr_stmt(Python3Parser::Expr_stmtContext *ctx) {
                 if (val.type() == typeid(std::string)) {
                     val = std::any_cast<std::string>(val) * anyToInt(RHS);
                 } else if (RHS.type() == typeid(std::string)) {
-                    val = std::any_cast<std::string>(RHS) * anyToInt(LHS);
+                    val = std::any_cast<std::string>(RHS) * anyToInt(val);
                 } else if (val.type() == typeid(double) || RHS.type() == typeid(double)) {
                     val = anyToDouble(val) * anyToDouble(RHS);
                 } else {
@@ -107,6 +108,7 @@ std::any EvalVisitor::visitFlow_stmt(Python3Parser::Flow_stmtContext *ctx) {
     } else if (ctx->continue_stmt() != nullptr) {
         return visit(ctx->continue_stmt());
     } else {
+        // std::cout << "return_stmt!" << std::endl;
         return visit(ctx->return_stmt());
     }
 }
@@ -121,7 +123,15 @@ std::any EvalVisitor::visitContinue_stmt(Python3Parser::Continue_stmtContext *ct
 
 std::any EvalVisitor::visitReturn_stmt(Python3Parser::Return_stmtContext *ctx) {
     if (ctx->testlist() != nullptr) {
-        return visit(ctx->testlist());
+        std::vector<std::any> val_list = std::any_cast<std::vector<std::any>>(visit(ctx->testlist()));
+        for (size_t i = 0; i < val_list.size(); ++i) {
+            Variable::tryGetValue(val_list[i]);
+        }
+        if (val_list.size() == 1) {
+            return val_list[0];
+        } else {
+            return val_list;
+        }
     } else {
         return kReturnVoid;
     }
@@ -129,8 +139,10 @@ std::any EvalVisitor::visitReturn_stmt(Python3Parser::Return_stmtContext *ctx) {
 
 std::any EvalVisitor::visitCompound_stmt(Python3Parser::Compound_stmtContext *ctx) {
     if (ctx->if_stmt() != nullptr) {
-        return visit(ctx->if_stmt());
-    } else if (ctx->while_stmt()) {
+        std::any tmp = visit(ctx->if_stmt());
+        // std::cout << (tmp.type() == typeid(std::vector<std::any>)) << std::endl;
+        return tmp;
+    } else if (ctx->while_stmt() != nullptr) {
         return visit(ctx->while_stmt());
     } else {
         return visit(ctx->funcdef());
@@ -138,13 +150,18 @@ std::any EvalVisitor::visitCompound_stmt(Python3Parser::Compound_stmtContext *ct
 }
 
 std::any EvalVisitor::visitIf_stmt(Python3Parser::If_stmtContext *ctx) {
+    // std::cout << "If!" << std::endl;
     std::vector<Python3Parser::TestContext*> test_list = ctx->test();
     std::vector<Python3Parser::SuiteContext*> suite_list = ctx->suite();
     for (size_t i = 0; i < test_list.size(); ++i) {
-        if (anyToBoolean(visit(test_list[i]))) {
+        std::any val = visit(test_list[i]);
+        // std::cout << "test" << i << std::endl;
+        if (anyToBoolean(val)) {
+            // std::cout << i << " is true!" << std::endl;
             return visit(suite_list[i]);
         }
     }
+    // std::cout << 0 << " is false!" << std::endl;
     if (suite_list.size() == test_list.size()) {
         return kDefault;
     } else {
@@ -155,21 +172,26 @@ std::any EvalVisitor::visitIf_stmt(Python3Parser::If_stmtContext *ctx) {
 std::any EvalVisitor::visitWhile_stmt(Python3Parser::While_stmtContext *ctx) {
     while (anyToBoolean(visit(ctx->test()))) {
         std::any val = visit(ctx->suite());
-        endValue tmp = std::any_cast<endValue>(val);
-        if (tmp == kBreak) {
-            break;
-        } else if (tmp == kContinue) {
-            continue;
-        } else if (tmp == kReturnVoid) {
-            return kReturnVoid;
+        // std::cerr << (val.type() == typeid(bool)) << std::endl;
+        // std::cerr << (val.type() == typeid(endValue)) << std::endl;
+        if (val.type() == typeid(endValue)) {
+            endValue tmp = std::any_cast<endValue>(val);
+            if (tmp == kBreak) {
+                break;
+            } else if (tmp == kReturnVoid) {
+                return kReturnVoid;
+            }
+        } else {
+            return val;
         }
     }
     return kDefault;
 }
 
 std::any EvalVisitor::visitSuite(Python3Parser::SuiteContext *ctx) {
-    // std::cerr << "suite!" << std::endl;
+    // std::cerr << "suite!{" << std::endl;
     if (ctx->simple_stmt() != nullptr) {
+        // std::cerr << "}End" << std::endl;
         return visit(ctx->simple_stmt());
     } else {
         std::vector<Python3Parser::StmtContext*> stmt_list;
@@ -177,16 +199,19 @@ std::any EvalVisitor::visitSuite(Python3Parser::SuiteContext *ctx) {
         for (auto x: stmt_list) {
             std::any val = visitStmt(x);
             if (val.type() != typeid(endValue)) {
+                // std::cout << (val.type() == typeid(std::vector<std::any>)) << std::endl;
                 return val;
             }
             // std::cerr << (val.type() == typeid(endValue)) << std::endl;
-            // std::cerr << "End" << std::endl;
+            
             endValue tmp = std::any_cast<endValue>(val);
             // std::cerr << tmp << std::endl;
             if (tmp != kDefault) {
+                // std::cerr << "}End" << std::endl;
                 return tmp;
             }
         }
+        // std::cerr << "}End" << std::endl;
         return kDefault;
     }
 }

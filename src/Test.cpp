@@ -2,7 +2,7 @@
 
 std::any EvalVisitor::visitTest(Python3Parser::TestContext *ctx) {
     std::any res = visit(ctx->or_test());
-    // std::cerr << (res.type() == typeid(endValue)) << std::endl;
+    // std::cerr << (res.type() == typeid(bool)) << std::endl;
     return res;
 }
 
@@ -36,7 +36,9 @@ std::any EvalVisitor::visitAnd_test(Python3Parser::And_testContext *ctx) {
 
 std::any EvalVisitor::visitNot_test(Python3Parser::Not_testContext *ctx) {
     if (ctx->not_test() != nullptr) {
-        return !anyToBoolean(visit(ctx->not_test()));
+        std::any val = anyToBoolean(visit(ctx->not_test()));
+        // std::cerr << (val.type() == typeid(bool)) << std::endl;
+        return !anyToBoolean(val);
     } else {
         return visit(ctx->comparison());
     }
@@ -48,16 +50,20 @@ std::any EvalVisitor::visitTestlist(Python3Parser::TestlistContext *ctx) {
     // std::cerr << "GOOD!" << std::endl;
     for (auto &node: test_list) {
         std::any val = visit(node);
+        // std::cerr << '?' << (val.type() == typeid(std::pair<std::string, int>)) << std::endl;
         if (val.type() == typeid(std::vector<std::any>)) {
             std::vector<std::any> tmp = std::any_cast<std::vector<std::any>>(val);
-            for (size_t i = 0; i < tmp.size(); ++i) {
-                res.push_back(tmp[i]);
+            // std::cerr << tmp.size() << std::endl;
+            for (auto x: tmp) {
+                res.push_back(x);
             }
         } else {
-            // std::cerr << '?' << (val.type() == typeid(std::pair<std::string, int>)) << std::endl;
+            // std::cerr << "?" << (val.type() == typeid(std::pair<std::string, int>)) << ' ' << (val.type() == typeid(int)) << std::endl;
             res.push_back(val);
         }
     }
     // std::cerr << "Testlist!" << std::endl;
+    // std::cerr << res.size() << std::endl;
+    // std::cerr << (res[0].type() == typeid(int2048)) << std::endl;
     return res;
 }

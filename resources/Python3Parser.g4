@@ -5,8 +5,8 @@ options {
 }
 
 file_input: (NEWLINE | stmt)* EOF; // done
-funcdef: 'def' NAME parameters ':' suite;
-parameters: '(' typedargslist? ')';
+funcdef: 'def' NAME parameters ':' suite; // done
+parameters: '(' typedargslist? ')'; // done
 typedargslist: (tfpdef ('=' test)? (',' tfpdef ('=' test)?)*);
 tfpdef: NAME ; // done
 
