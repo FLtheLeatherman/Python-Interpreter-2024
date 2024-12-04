@@ -525,6 +525,9 @@ bool int2048::getBoolean() {
   return len != 0;
 }
 std::string int2048::getString() {
+  if (len == 0) {
+    return "0";
+  }
   std::string res = "";
   if (sgn < 0) res.append("-");
   for (int i = len - 1; i >= 0; --i) {

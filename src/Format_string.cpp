@@ -10,7 +10,7 @@ std::any EvalVisitor::visitFormat_string(Python3Parser::Format_stringContext *ct
             res += anyToString(tmp[0]);
             i += 2;
         } else {
-            for (int j = 0; j < tmp.size(); ++j) {
+            for (size_t j = 0; j < tmp.size(); ++j) {
                 res += tmp[j];
                 if (tmp[j] == '{' || tmp[j] == '}') {
                     j++;
