@@ -69,8 +69,9 @@ std::any EvalVisitor::visitArgument(Python3Parser::ArgumentContext *ctx) {
         return val;
     } else {
         std::any val1 = visit(test_list[0]), val2 = visit(test_list[1]);
-        Variable::tryGetValue(val1);
+        // Variable::tryGetValue(val1);
         Variable::tryGetValue(val2);
+        // std::cerr << "check" << (val1.type() == typeid(std::pair<std::string, int>)) << std::endl;
         // std::cerr << (std::any_cast<std::pair<std::string, int>>(val1).first) << ' ' << (std::any_cast<int2048>(val2)) << std::endl;
         return std::make_pair(val1, val2);
     }

@@ -17,7 +17,6 @@ private:
     std::vector<std::pair<std::string, std::any>> parameter_list;
     Python3Parser::SuiteContext *ctx;
 public:
-    // todo
     Function(){
         parameter_list = std::vector<std::pair<std::string, std::any>>();
         ctx = nullptr;
@@ -41,7 +40,6 @@ class Functions {
 private:
     static std::map<std::string, Function> funcs;
 public:
-    // todo
     static void createFunction(std::string, Function);
     static Python3Parser::SuiteContext* visitFunction(std::string, std::vector<std::any>);
 };
