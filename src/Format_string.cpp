@@ -12,7 +12,7 @@ std::any EvalVisitor::visitFormat_string(Python3Parser::Format_stringContext *ct
         } else {
             for (size_t j = 0; j < tmp.size(); ++j) {
                 res += tmp[j];
-                if (j < tmp.size() - 1 && tmp[j] == tmp[j + 1] && (tmp[j] == '{' || tmp[j] == '}')) {
+                if (tmp[j] == '{' || tmp[j] == '}') {
                     j++;
                 }
             }
