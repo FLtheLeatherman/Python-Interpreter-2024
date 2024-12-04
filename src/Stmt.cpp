@@ -35,7 +35,7 @@ std::any EvalVisitor::visitExpr_stmt(Python3Parser::Expr_stmtContext *ctx) {
             std::vector<std::any> LHS_list;
             std::vector<std::any> RHS_list = std::any_cast<std::vector<std::any>>(visit(testlist_list[testlist_list.size() - 1]));
             // std::cout << "Expr_stmt! begin" << std::endl;
-            for (int i = testlist_list.size() - 2; i >= 0; --i) {
+            for (int i = testlist_list.size() - 2; i >= 0; --i) { // do not use size_t
                 // std::cout << i << std::endl;
                 // std::cerr << "GOOD" << std::endl;
                 LHS_list = std::any_cast<std::vector<std::any>>(visit(testlist_list[i]));

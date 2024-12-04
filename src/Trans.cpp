@@ -21,8 +21,9 @@ bool anyToBoolean(std::any val) {
     } else if (val.type() == typeid(int2048)){
         int2048 tmp = std::any_cast<int2048>(val);
         return tmp.getBoolean();
+    } else {
+        return false;
     }
-    return false;
 }
 
 std::string anyToString(std::any val) {
@@ -50,8 +51,10 @@ int2048 anyToInt(std::any val) {
         return int2048(std::any_cast<bool>(val) ? 1 : 0);
     } else if (val.type() == typeid(double)) {
         return int2048(std::any_cast<double>(val));
-    } else {
+    } else if (val.type() == typeid(int2048)) {
         return std::any_cast<int2048>(val);
+    } else {
+        return 0;
     }
 }
 
@@ -63,8 +66,10 @@ double anyToDouble(std::any val) {
         return std::any_cast<bool>(val) ? 1.0 : 0.0;
     } else if (val.type() == typeid(double)) {
         return std::any_cast<double>(val);
-    } else {
+    } else if (val.type() == typeid(int2048)) {
         int2048 tmp = std::any_cast<int2048>(val);
         return tmp.getDouble();
+    } else {
+        return 0.0;
     }
 }

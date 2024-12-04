@@ -44,5 +44,7 @@ void Variable::addScope() {
 }
 
 void Variable::deleteScope() {
-    vars.pop_back();
+    if (vars.size() > 1) {
+        vars.pop_back();
+    }
 }
