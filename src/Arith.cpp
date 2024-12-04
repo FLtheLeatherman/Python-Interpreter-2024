@@ -227,7 +227,9 @@ std::any EvalVisitor::visitMuldivmod_op(Python3Parser::Muldivmod_opContext *ctx)
 
 std::any EvalVisitor::visitFactor(Python3Parser::FactorContext *ctx) {
     if (ctx->ADD() != nullptr) {
-        return visit(ctx->factor());
+        std::any val = visit(ctx->factor());
+        Variable::tryGetValue(val);
+        return val;
     } else if (ctx->MINUS() != nullptr) {
         std::any val = visit(ctx->factor());
         Variable::tryGetValue(val);
