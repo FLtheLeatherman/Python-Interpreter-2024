@@ -537,8 +537,12 @@ std::string int2048::getString() {
   }
   std::string res = "";
   if (sgn < 0) res.append("-");
-  for (int i = len - 1; i >= 0; --i) {
-    res.append(std::to_string(num[i]));
+  res += std::to_string(num[len - 1]);
+  for (int i = len - 2; i >= 0; --i) {
+    res += (num[i] / 1000) + '0';
+    res += (num[i] / 100 % 10) + '0';
+    res += (num[i] / 10 % 10) + '0';
+    res += (num[i] % 10) + '0';
   }
   return res;
 }
