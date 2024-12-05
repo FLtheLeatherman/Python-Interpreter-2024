@@ -14,13 +14,7 @@ Python3Parser::SuiteContext* Functions::visitFunction(std::string name, std::vec
             Variable::setValueLocal(fun.getName(i), parameters[i]);
             vis[fun.getName(i)] = true;
         } else {
-            // std::cerr << '1' << std::endl;
             std::pair<std::any, std::any> tmp = std::any_cast<std::pair<std::any, std::any>>(parameters[i]);
-            // std::cerr << '2' << std::endl;
-
-            // std::cerr << std::any_cast<std::pair<std::string, int>>(tmp.first).first << ' ' << std::any_cast<int2048>(tmp.second) << std::endl;
-            // exit(0);
-            // std::cerr << std::any_cast<std::pair<std::string, int>>(tmp.first).first << std::endl;
             Variable::setValueLocal(std::any_cast<std::pair<std::string, int>>(tmp.first).first, tmp.second);
             vis[std::any_cast<std::pair<std::string, int>>(tmp.first).first] = true;
         }

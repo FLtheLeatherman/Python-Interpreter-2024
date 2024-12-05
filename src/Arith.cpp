@@ -8,7 +8,6 @@ std::any EvalVisitor::visitComparison(Python3Parser::ComparisonContext *ctx) {
         return res;
     }
     Variable::tryGetValue(res);
-    // std::cout << "Comp1" << std::endl;
     for (size_t i = 1; i < arith_list.size(); ++i) {
         CompType opt = std::any_cast<CompType>(visit(op_list[i - 1]));
         std::any val = visit(arith_list[i]);
@@ -115,7 +114,6 @@ std::any EvalVisitor::visitComparison(Python3Parser::ComparisonContext *ctx) {
         }
         res = val;
     }
-    // std::cout << "Comp2" << std::endl;
     return true;
 }
 
@@ -153,7 +151,6 @@ std::any EvalVisitor::visitArith_expr(Python3Parser::Arith_exprContext *ctx) {
                 res = tmp;
             } else if (res.type() == typeid(double) || val.type() == typeid(double)) {
                 double tmp = anyToDouble(res) + anyToDouble(val);
-                // std::cerr << anyToDouble(res) << ' ' << anyToDouble(val) << std::endl;
                 res = tmp;
             } else {
                 int2048 tmp = anyToInt(res) + anyToInt(val);
@@ -200,9 +197,7 @@ std::any EvalVisitor::visitTerm(Python3Parser::TermContext *ctx) {
             } else if (val.type() == typeid(double) || res.type() == typeid(double)) {
                 res = anyToDouble(res) * anyToDouble(val);
             } else {
-                // std::cout << anyToInt(res) << ' ' << anyToInt(val) << std::endl;
                 res = anyToInt(res) * anyToInt(val);
-                // std::cout << std::any_cast<int2048>(res) << std::endl;
             }
         } else if (opt == kDiv) {
             res = anyToDouble(res) / anyToDouble(val);
@@ -242,21 +237,15 @@ std::any EvalVisitor::visitFactor(Python3Parser::FactorContext *ctx) {
         }
     } else {
         std::any tmp = visit(ctx->atom_expr());
-        // std::cerr << (tmp.type() == typeid(endValue)) << std::endl;
-        // std::cerr << "??" << (tmp.type() == typeid(std::pair<std::string, int>)) << std::endl;
         return tmp;
     }
 }
 
 std::any EvalVisitor::visitAtom_expr(Python3Parser::Atom_exprContext *ctx) {
     if (ctx->trailer() != nullptr) {
-        // std::cerr << "Atom_expr!" << std::endl;
         std::string str = (std::any_cast<std::pair<std::string, int>>(visit(ctx->atom()))).first;
-        // std::cerr << str << std::endl;
         std::vector<std::any> arg_list = std::any_cast<std::vector<std::any>>(visit(ctx->trailer()));
         if (str == "print") {
-            // std::cerr << "print!" << std::endl;
-            // std::cerr << arg_list.size() << std::endl;
             for (size_t i = 0; i < arg_list.size(); ++i) {
                 if (arg_list[i].type() == typeid(std::string)) {
                     std::string tmp = std::any_cast<std::string>(arg_list[i]);
@@ -277,7 +266,6 @@ std::any EvalVisitor::visitAtom_expr(Python3Parser::Atom_exprContext *ctx) {
                 } else if (arg_list[i].type() == typeid(double)) {
                     std::cout << std::fixed << std::setprecision(6) << std::any_cast<double>(arg_list[i]);
                 } else if (arg_list[i].type() == typeid(int2048)) {
-                    // std::cerr << "int2048!" << std::endl;
                     std::cout << std::any_cast<int2048>(arg_list[i]);
                 } else if (arg_list[i].type() == typeid(bool)) {
                     std::cout << (std::any_cast<bool>(arg_list[i]) ? "True" : "False");
@@ -289,7 +277,6 @@ std::any EvalVisitor::visitAtom_expr(Python3Parser::Atom_exprContext *ctx) {
                 }
             }
             std::cout << '\n';
-            // std::cerr << "Default!" << std::endl;
             return kDefault;
         } else if (str == "int") {
             return anyToInt(arg_list[0]);
@@ -301,15 +288,11 @@ std::any EvalVisitor::visitAtom_expr(Python3Parser::Atom_exprContext *ctx) {
             return anyToBoolean(arg_list[0]);
         } else {
             Variable::addScope();
-            // std::cerr << str << std::endl;
             std::any res = visit(Functions::visitFunction(str, arg_list));
-            // std::cerr << str << std::endl;
             Variable::deleteScope();
-            // std::cerr << (res.type() == typeid(std::vector<std::any>)) << std::endl;
             return res;
         }
     } else {
-        // std::cerr << "omg" << std::endl;
         return visit(ctx->atom());
     }
 }
@@ -324,7 +307,6 @@ std::any EvalVisitor::visitTrailer(Python3Parser::TrailerContext *ctx) {
 
 std::any EvalVisitor::visitAtom(Python3Parser::AtomContext *ctx) {
     if (ctx->NAME() != nullptr) {
-        // std::cerr << ctx->NAME()->getText() << std::endl;
         return std::make_pair(ctx->NAME()->getText(), 0);
     } else if (ctx->NUMBER() != nullptr) {
         std::string tmp = ctx->NUMBER()->getText();

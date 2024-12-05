@@ -257,7 +257,6 @@ int2048 &int2048::operator*=(const int2048 &number) {
       vec1.push_back({0.0, (double)(number.num[i] / 100)});
     }
   }
-  // std::cout << vec1.size() << std::endl;
   int L = 1;
   while (L < (vec1.size() + vec1.size())) {
     L <<= 1;
@@ -265,21 +264,18 @@ int2048 &int2048::operator*=(const int2048 &number) {
   for (int i = vec1.size(); i < L; ++i) {
     vec1.push_back({0.0, 0.0});
   }
-  // std::cout << vec1.size() << std::endl;
   FFT(vec1, L, 1); 
   for (int i = 0; i < vec1.size(); ++i) {
     vec1[i] = vec1[i] * vec1[i];
   }
   FFT(vec1, L, -1);
   sgn *= number.sgn;
-  // std::cout << sgn << std::endl;
   num.clear();
   long long carry = 0;
   for (int i = 0; i < L; i += 2) {
     long long now = (long long)(vec1[i].imag() / 2.0 + 0.5) 
     + (long long)(vec1[i + 1].imag() / 2.0 + 0.5) * 100 
     + carry;
-    // std::cout << now << std::endl;
     carry = now / base;
     if (now >= base) {
       now %= base;
