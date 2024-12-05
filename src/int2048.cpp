@@ -290,6 +290,9 @@ int2048 &int2048::operator*=(const int2048 &number) {
     num.pop_back();
   }
   len = num.size();
+  if (!len) {
+    sgn = 1;
+  }
   return *this;
 }
 int2048 operator*(int2048 number1, const int2048 &number2) {
