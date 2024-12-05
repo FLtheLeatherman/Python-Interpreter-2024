@@ -200,7 +200,9 @@ std::any EvalVisitor::visitTerm(Python3Parser::TermContext *ctx) {
             } else if (val.type() == typeid(double) || res.type() == typeid(double)) {
                 res = anyToDouble(res) * anyToDouble(val);
             } else {
+                // std::cout << anyToInt(res) << ' ' << anyToInt(val) << std::endl;
                 res = anyToInt(res) * anyToInt(val);
+                // std::cout << std::any_cast<int2048>(res) << std::endl;
             }
         } else if (opt == kDiv) {
             res = anyToDouble(res) / anyToDouble(val);
